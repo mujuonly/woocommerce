@@ -1,6 +1,6 @@
 <?php
 
-namespace Automattic\WooCommerce\Internal\ReceiptRendering;
+namespace Automattic\WooCommerce\Internal;
 
 use Automattic\WooCommerce\Internal\RegisterHooksInterface;
 use Automattic\WooCommerce\Utilities\StringUtil;
@@ -130,7 +130,7 @@ abstract class RestApiControllerBase implements RegisterHooksInterface {
 	 * @return array The updated list of WooCommerce REST API namespaces/controllers.
 	 */
 	protected function handle_woocommerce_rest_api_get_rest_namespaces( array $namespaces ): array {
-		$namespaces['wc/v3'][ $this->get_rest_api_namespace() ] = static::class;
+		$namespaces[ $this->route_namespace ][ $this->get_rest_api_namespace() ] = static::class;
 		return $namespaces;
 	}
 
