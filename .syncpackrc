@@ -131,15 +131,6 @@
 		},
 		{
 			"dependencies": [
-				"@playwright/test"
-			],
-			"packages": [
-				"**"
-			],
-			"pinVersion": "^1.40.1"
-		},
-		{
-			"dependencies": [
 				"@wordpress/babel-plugin-import-jsx-pragma",
 				"@wordpress/babel-preset-default",
 				"@wordpress/stylelint-config",
