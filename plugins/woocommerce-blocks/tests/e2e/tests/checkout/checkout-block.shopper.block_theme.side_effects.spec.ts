@@ -105,7 +105,7 @@ test.describe( 'Shopper → Account (guest user)', () => {
 	} );
 } );
 
-test.describe( 'shopper → Local pickup', () => {
+test.describe( 'Shopper → Local pickup', () => {
 	test.beforeEach( async ( { admin } ) => {
 		// Enable local pickup.
 		await admin.visitAdminPage(
@@ -204,7 +204,7 @@ test.describe( 'shopper → Local pickup', () => {
 	} );
 } );
 
-test.describe( 'Payment Methods', () => {
+test.describe( 'Shopper → Payment Methods', () => {
 	test( 'User can change payment methods', async ( {
 		frontendUtils,
 		page,
@@ -228,7 +228,7 @@ test.describe( 'Payment Methods', () => {
 	} );
 } );
 
-test.describe( 'Shipping and Billing Addresses', () => {
+test.describe( 'Shopper → Shipping and Billing Addresses', () => {
 	const billingTestData = {
 		firstname: 'John',
 		lastname: 'Doe',
@@ -430,7 +430,7 @@ test.describe( 'Shopper → Checkout block → Place Order (guest user)', () => 
 	} );
 } );
 
-test.describe( 'Checkout Form Errors (guest user)', () => {
+test.describe( 'Shopper → Checkout Form Errors (guest user)', () => {
 	test.use( { storageState: guestFile } );
 
 	test( 'can see errors when form is incomplete', async ( {
@@ -467,7 +467,7 @@ test.describe( 'Checkout Form Errors (guest user)', () => {
 	} );
 } );
 
-test.describe( 'Billing Address Form', () => {
+test.describe( 'Shopper → Billing Address Form', () => {
 	const blockSelectorInEditor = blockData.selectors.editor.block as string;
 
 	test( 'Enable company field', async ( { editor, admin, editorUtils } ) => {
@@ -597,6 +597,27 @@ test.describe( 'Billing Address Form', () => {
 						).toHaveValue( value );
 				}
 			}
+		} );
+
+		test( 'Ensure that each <CheckboxControl> component has a unique id', async ( {
+			frontendUtils,
+			page,
+		} ) => {
+			await frontendUtils.emptyCart();
+			await frontendUtils.goToShop();
+			await frontendUtils.addToCart( SIMPLE_PHYSICAL_PRODUCT_NAME );
+			await frontendUtils.goToCheckout();
+
+			const isUnique = await page.evaluate( () => {
+				const elements = document.querySelectorAll(
+					'[id^="checkbox-control-"]'
+				);
+				const ids = Array.from( elements ).map( ( el ) => el.id );
+				const uniqueIds = new Set( ids );
+				return ids.length === uniqueIds.size;
+			} );
+
+			expect( isUnique ).toBe( true );
 		} );
 	} );
 } );
