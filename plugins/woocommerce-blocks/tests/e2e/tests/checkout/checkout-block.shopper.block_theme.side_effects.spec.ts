@@ -598,26 +598,44 @@ test.describe( 'Shopper → Billing Address Form', () => {
 				}
 			}
 		} );
+	} );
+} );
+test.describe( 'Shopper → Checkout Form', () => {
+	test.use( { storageState: guestFile } );
 
-		test( 'Ensure that each <CheckboxControl> component has a unique id', async ( {
-			frontendUtils,
-			page,
-		} ) => {
-			await frontendUtils.emptyCart();
-			await frontendUtils.goToShop();
-			await frontendUtils.addToCart( SIMPLE_PHYSICAL_PRODUCT_NAME );
-			await frontendUtils.goToCheckout();
-
-			const isUnique = await page.evaluate( () => {
-				const elements = document.querySelectorAll(
-					'[id^="checkbox-control-"]'
-				);
-				const ids = Array.from( elements ).map( ( el ) => el.id );
-				const uniqueIds = new Set( ids );
-				return ids.length === uniqueIds.size;
-			} );
-
-			expect( isUnique ).toBe( true );
+	test.beforeEach( async ( { requestUtils } ) => {
+		await requestUtils.rest( {
+			method: 'PUT',
+			path: 'wc/v3/settings/account/woocommerce_enable_signup_and_login_from_checkout',
+			data: { value: 'yes' },
 		} );
+	} );
+
+	test( 'Ensure that each <CheckboxControl> component has a unique id', async ( {
+		frontendUtils,
+		page,
+	} ) => {
+		await frontendUtils.emptyCart();
+		await frontendUtils.goToShop();
+		await frontendUtils.addToCart( SIMPLE_PHYSICAL_PRODUCT_NAME );
+		await frontendUtils.goToCheckout();
+
+		const createAccountCheckboxId = await page
+			.getByLabel( 'Create an account?' )
+			.getAttribute( 'id' );
+		const reuseAddressCheckboxId = await page
+			.getByLabel( 'Use same address for billing' )
+			.getAttribute( 'id' );
+		const addNoteCheckboxId = await page
+			.getByLabel( 'Add a note to your order' )
+			.getAttribute( 'id' );
+
+		const uniqueIds = new Set( [
+			reuseAddressCheckboxId,
+			addNoteCheckboxId,
+			createAccountCheckboxId,
+		] );
+
+		expect( uniqueIds.size ).toEqual( 3 );
 	} );
 } );
